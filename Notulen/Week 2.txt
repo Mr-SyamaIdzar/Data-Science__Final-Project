@@ -1,0 +1,35 @@
+1. Model diganti hanya menampu 1 kata
+2. Model dan merk menggunakan frequency encoder bukan target encoder
+- Alasannya:
+Target encoding membuat nilai numerik untuk setiap merk/model berdasarkan rata-rata harga.
+Masalahnya:
+
+❌ 1. Kamu menghitung rata-rata menggunakan seluruh data
+
+Ini menyebabkan target leakage — model sudah “melihat” harga asli mobil saat menghitung encoding, sehingga model menjadi sangat yakin bahwa model mobil ≈ harga rata-rata model tersebut.
+
+Itulah mengapa feature importance-nya sangat tinggi (0.95 → 0.68).
+
+❌ 2. Data model/merek sangat predictive terhadap harga
+
+Mobil Toyota Avanza memang punya range harga khas. Honda Jazz punya range khas. Jadi saat kamu mengganti kategori menjadi angka yang sudah mengandung informasi harga, model semakin "mengunci".
+
+
+Tidak ada informasi harga yang digunakan.
+Hanya jumlah kemunculan.
+
+✔ Aman → Tidak terjadi leakage
+
+Karena FE tidak menggunakan target Harga.
+
+✔ Masih informatif
+
+Merk/model yang populer biasanya punya pola harga tertentu, meskipun tidak sekuat target encoding.
+
+✔ Mencegah dominasi berlebihan
+
+Feature model/merk tidak akan jadi 0.95 dominance.
+
+✔ Cocok jika user nantinya input manual
+
+FE tidak tergantung nilai harga → bisa dipakai untuk prediksi real user input.

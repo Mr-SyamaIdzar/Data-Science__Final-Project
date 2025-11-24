@@ -1,0 +1,1 @@
+1. Untuk penanganan outliner saat ini ditiadakan karena menurut sumber yang dibaca fadli rendom forest outlier tidak terlalu terpengaruh mengakibatkan r2 menjadi < 0.90

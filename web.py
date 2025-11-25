@@ -65,9 +65,25 @@ model_input = st.sidebar.text_input("Model Pendek", placeholder="contoh: Avanza"
 btn = st.sidebar.button("Prediksi Harga")
 
 # ============================
-# 🔮 PREDICTION
+# 🛑 VALIDASI INPUT
 # ============================
+
+allow_predict = True   # flag untuk menentukan boleh prediksi atau tidak
+
 if btn:
+    if merk_input.strip() == "":
+        st.sidebar.error("❗ Merk mobil wajib diisi.")
+        allow_predict = False
+
+    if model_input.strip() == "":
+        st.sidebar.error("❗ Model mobil wajib diisi.")
+        allow_predict = False
+
+# ============================
+# 🔮 PREDICTION — hanya jika valid
+# ============================
+
+if btn and allow_predict:
 
     # Label encoding
     fuel_encoded = le_fuel.transform([fuel_type])[0]

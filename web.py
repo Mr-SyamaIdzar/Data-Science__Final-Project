@@ -4,6 +4,7 @@ import seaborn as sns
 import numpy as np
 import streamlit as st
 import joblib
+from datetime import datetime
 
 # ============================
 # 🔧 STREAMLIT CONFIG
@@ -38,7 +39,23 @@ ohe_feature_names = ohe.get_feature_names_out(['Fuel Type', 'Transmission'])
 # ============================
 st.sidebar.header("Input Spesifikasi Mobil")
 
-umur = st.sidebar.number_input("Umur Mobil (tahun)", 0, 30, 5)
+# Dapatkan tahun saat ini
+tahun_sekarang = datetime.now().year
+
+# Input tahun produksi (bukan umur mobil)
+tahun_produksi = st.sidebar.number_input(
+    "Tahun Produksi", 
+    min_value=1990, 
+    max_value=tahun_sekarang, 
+    value=2019
+)
+
+# Hitung umur mobil otomatis
+umur = tahun_sekarang - tahun_produksi
+
+# Tampilkan informasi umur mobil
+st.sidebar.info(f"Umur Mobil: {umur} tahun")
+
 jarak_tempuh = st.sidebar.number_input("Jarak Tempuh (km)", 0, 400000, 100000)
 engine_cc = st.sidebar.number_input("Engine Capacity (CC)", 600, 5000, 1500)
 seat = st.sidebar.number_input("Jumlah Kursi", 2, 12, 5)
@@ -46,8 +63,8 @@ seat = st.sidebar.number_input("Jumlah Kursi", 2, 12, 5)
 fuel_type = st.sidebar.selectbox("Fuel Type", ohe.categories_[0])
 transmission = st.sidebar.selectbox("Transmission", ohe.categories_[1])
 
-merk_input = st.sidebar.text_input("Merk Mobil", placeholder="contoh: Toyota")
-model_input = st.sidebar.text_input("Model Pendek", placeholder="contoh: Avanza")
+merk_input = st.sidebar.text_input("Merk Mobil", placeholder="contoh: Toyota").strip().upper()
+model_input = st.sidebar.text_input("Model Pendek", placeholder="contoh: Avanza").strip().upper()
 
 btn = st.sidebar.button("Prediksi Harga")
 
@@ -71,9 +88,11 @@ if btn:
 if btn and allow_predict:
 
     # -------------------------
-    # 1️⃣ OHE Fuel & Transmission
+    # 1️⃣ OHE Fuel & Transmission (DIPERBAIKI)
     # -------------------------
-    ohe_input = ohe.transform([[fuel_type, transmission]])
+    ohe_input_df = pd.DataFrame([[fuel_type, transmission]], 
+                                 columns=['Fuel Type', 'Transmission'])
+    ohe_input = ohe.transform(ohe_input_df)
     ohe_df = pd.DataFrame(ohe_input, columns=ohe_feature_names)
 
     # -------------------------
@@ -121,8 +140,8 @@ if btn and allow_predict:
     st.subheader("📋 Detail Input (Setelah Encoding & OHE)")
     st.write(input_df)
 
-    st.subheader("📊 Visualisasi Fitur Input")
-    st.bar_chart(input_df.T)
+    # st.subheader("📊 Visualisasi Fitur Input")
+    # st.bar_chart(input_df.T)
 
 else:
     st.info("Isi spesifikasi mobil lalu klik **Prediksi Harga**.")
